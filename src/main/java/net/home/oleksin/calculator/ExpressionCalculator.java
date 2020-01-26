@@ -77,18 +77,7 @@ public class ExpressionCalculator {
         }
 
     }
-
-    public void getOutput(){
-        stackingToken();
-        while (!outputArray.isEmpty()){
-            if (outputArray.getFirst().getTokenType() == TokenType.NUMBER){
-                System.out.println(outputArray.pollFirst().getOperand());
-            }
-            else{
-                System.out.println(outputArray.pollFirst().getOperation());
-            }
-        }
-    }
+    
 
 
     public BigDecimal getDecision (){
