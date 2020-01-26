@@ -14,12 +14,12 @@ import java.util.Optional;
 public class ExpressionCalculator {
     EnumMap <Operation, MathOperation> operators;
     Deque <Token> outputArray;
-    Deque <Token> operatorsArray;
+    Deque <Token> operatorsStack;
     Parser parser;
 
     public ExpressionCalculator(String formula){
         outputArray = new ArrayDeque<>();
-        operatorsArray = new ArrayDeque<>();
+        operatorsStack = new ArrayDeque<>();
         operators = new EnumMap<>(Operation.class);
 
         operators.put(Operation.PLUS, new AdditionOperation());
@@ -36,19 +36,19 @@ public class ExpressionCalculator {
             if (tempToken.isPresent()) {
                 switch (tempToken.get().getTokenType()) {
                     case NUMBER:
-                        outputArray.add(tempToken.get());
+                        outputArray.addLast(tempToken.get());
                         break;
                     case BRACKET_OPEN:
-                        operatorsArray.add(tempToken.get());
+                        operatorsStack.addLast(tempToken.get());
                         break;
                     case BRACKET_CLOSE:
                         boolean bl = false;
-                        while (!operatorsArray.isEmpty()) {
-                            if (operatorsArray.getLast().getTokenType() != TokenType.BRACKET_OPEN) {
-                                outputArray.add(operatorsArray.pollLast());
+                        while (!operatorsStack.isEmpty()) {
+                            if (operatorsStack.getLast().getTokenType() != TokenType.BRACKET_OPEN) {
+                                outputArray.addLast(operatorsStack.pollLast());
                             } else {
                                 bl = true;
-                                operatorsArray.pollLast();
+                                operatorsStack.removeLast();
                                 break;
                             }
                         }
@@ -57,15 +57,13 @@ public class ExpressionCalculator {
                         }
                         break;
                     case OPERATION:
-                        if (operatorsArray.isEmpty() || operatorsArray.getLast().getTokenType() == TokenType.BRACKET_OPEN)
-                            operatorsArray.add(tempToken.get());
-                        else {
-                            if (operatorsArray.getLast().getOperation().getPriority() < tempToken.get().getOperation().getPriority()) {
-                                operatorsArray.add(tempToken.get());
-                            } else {
-                                outputArray.add(operatorsArray.pollLast());
-                                operatorsArray.add(tempToken.get());
-                            }
+                        if (operatorsStack.isEmpty() || operatorsStack.getLast().getTokenType() == TokenType.BRACKET_OPEN) {
+                            operatorsStack.addLast(tempToken.get());
+                        } else if (operatorsStack.getLast().getOperation().getPriority() < tempToken.get().getOperation().getPriority()) {
+                            operatorsStack.addLast(tempToken.get());
+                        } else {
+                            outputArray.addLast(operatorsStack.pollLast());
+                            operatorsStack.addLast(tempToken.get());
                         }
                         break;
                 }
@@ -74,10 +72,22 @@ public class ExpressionCalculator {
                 continue;
             }
         }
-        while (!operatorsArray.isEmpty()) {
-            outputArray.add(operatorsArray.pollFirst());
+        while (!operatorsStack.isEmpty()) {
+            outputArray.add(operatorsStack.pollLast());
         }
 
+    }
+
+    public void getOutput(){
+        stackingToken();
+        while (!outputArray.isEmpty()){
+            if (outputArray.getFirst().getTokenType() == TokenType.NUMBER){
+                System.out.println(outputArray.pollFirst().getOperand());
+            }
+            else{
+                System.out.println(outputArray.pollFirst().getOperation());
+            }
+        }
     }
 
 
@@ -86,10 +96,12 @@ public class ExpressionCalculator {
         Deque<BigDecimal> tempArray = new ArrayDeque<>();
         while (!outputArray.isEmpty()){
             if (outputArray.getFirst().getTokenType() == TokenType.NUMBER){
-                tempArray.add(outputArray.pollFirst().getOperand());
+                tempArray.addLast(outputArray.pollFirst().getOperand());
             }
             else{
-                tempArray.addLast(operators.get(outputArray.pollFirst().getOperation()).execute(tempArray.pollLast(),tempArray.pollLast()));
+                BigDecimal left = tempArray.pollLast();
+                BigDecimal right = tempArray.pollLast();
+                tempArray.addLast(operators.get(outputArray.pollFirst().getOperation()).execute(left, right));
             }
         }
         return tempArray.poll();

@@ -12,5 +12,6 @@ public class Main {
         formula = bufferedReader.readLine();
         ExpressionCalculator expressionCalculator = new ExpressionCalculator(formula);
         System.out.println(expressionCalculator.getDecision());
+        //expressionCalculator.getOutput();
     }
 }
