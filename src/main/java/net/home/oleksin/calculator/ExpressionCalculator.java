@@ -12,12 +12,11 @@ import java.util.EnumMap;
 import java.util.Optional;
 
 public class ExpressionCalculator {
-    EnumMap <Operation, MathOperation> operators;
-    Deque <Token> outputArray;
-    Deque <Token> operatorsStack;
-    Parser parser;
+    private EnumMap <Operation, MathOperation> operators;
+    private Deque <Token> outputArray;
+    private Deque <Token> operatorsStack;
 
-    public ExpressionCalculator(String formula){
+    public ExpressionCalculator(){
         outputArray = new ArrayDeque<>();
         operatorsStack = new ArrayDeque<>();
         operators = new EnumMap<>(Operation.class);
@@ -26,12 +25,10 @@ public class ExpressionCalculator {
         operators.put(Operation.MINUS, new SubtractionOperation());
         operators.put(Operation.MULTIPLY, new MultiplicationOperation());
         operators.put(Operation.DIVIDE, new DivisionOperation());
-
-        parser = new Parser(formula);
     }
 
 
-    private void stackingToken()  {
+    private void stackingToken(Parser parser)  {
         for (Optional<Token> tempToken : parser){
             tempToken.ifPresent(tempToken1 -> {
                 setSwitch(tempToken1);
@@ -80,8 +77,9 @@ public class ExpressionCalculator {
     }
 
 
-    public BigDecimal getDecision (){
-        stackingToken();
+    public BigDecimal execute (String expression){
+        Parser parser = new Parser(expression);
+        stackingToken(parser);
         Deque<BigDecimal> tempArray = new ArrayDeque<>();
         while (!outputArray.isEmpty()){
             if (outputArray.getFirst().getTokenType() == TokenType.NUMBER){

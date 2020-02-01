@@ -5,10 +5,7 @@ import java.util.*;
 public class Parser implements Iterable<Optional<Token>> {
     private final ParserContext parserContext;
     private final Map<Character, TokenReader> mapForToken;
-
     private Token token;
-    private Optional<Token> optionalToken;
-
 
     public Parser(String formula) {
         parserContext = new ParserContext(formula);
@@ -16,7 +13,7 @@ public class Parser implements Iterable<Optional<Token>> {
         for (int n = '0'; n <= '9'; n++) {
             mapForToken.put((char) n, new NumberTokenReader());
         }
-        mapForToken.put(' ', new BracketTokenReader());
+        mapForToken.put(' ', new SpaceTokenReader());
         mapForToken.put('+', new OperatorTokenReader());
         mapForToken.put('-', new OperatorTokenReader());
         mapForToken.put('*', new OperatorTokenReader());

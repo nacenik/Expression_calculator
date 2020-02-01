@@ -7,10 +7,10 @@ import java.io.InputStreamReader;
 public class Main {
     public static void main(String[] args) throws IOException {
 
-        String formula;
+        String execute;
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-        formula = bufferedReader.readLine();
-        ExpressionCalculator expressionCalculator = new ExpressionCalculator(formula);
-        System.out.println(expressionCalculator.getDecision());
+        execute = bufferedReader.readLine();
+        ExpressionCalculator expressionCalculator = new ExpressionCalculator();
+        System.out.println(expressionCalculator.execute(execute));
     }
 }

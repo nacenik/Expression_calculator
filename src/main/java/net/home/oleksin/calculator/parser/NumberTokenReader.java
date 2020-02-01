@@ -16,7 +16,6 @@ public class NumberTokenReader implements TokenReader {
             parserContext.incIndex();
         }
         BigDecimal bigDecimal = new BigDecimal(parserContext.getFormula().substring(startIndex, parserContext.getIndex())).setScale(5);
-        Token tempToken = new Token( bigDecimal, TokenType.NUMBER);
-        return tempToken;
+        return new Token(bigDecimal, TokenType.NUMBER);
     }
 }

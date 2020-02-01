@@ -4,14 +4,8 @@ public class BracketTokenReader implements TokenReader{
 
     @Override
     public Token proceed(ParserContext parserContext) {
-        TokenType type;
-        if (parserContext.getCurrentCharacter()=='(') {
-            type = TokenType.BRACKET_OPEN;
-        } else {
-            type = TokenType.BRACKET_CLOSE;
-        }
+        TokenType type = parserContext.getCurrentCharacter() == '(' ? TokenType.BRACKET_OPEN : TokenType.BRACKET_CLOSE;
         parserContext.incIndex();
-        Token tempToken = new Token(type);
-        return tempToken;
+        return new Token(type);
     }
 }
