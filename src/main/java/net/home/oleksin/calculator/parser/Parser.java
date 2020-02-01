@@ -49,12 +49,9 @@ public class Parser implements Iterable<Optional<Token>> {
                     throw new IllegalStateException("Invalid character index " + (parserContext.getIndex() + 1));
                 }
                 if (token.getTokenType() == TokenType.SPACE) {
-                    optionalToken = Optional.empty();
+                    return Optional.empty();
                 }
-                else {
-                    optionalToken = Optional.of(token);
-                }
-            return optionalToken;
+                return Optional.of(token);
         }
     }
 }
