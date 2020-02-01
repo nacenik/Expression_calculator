@@ -1,7 +1,5 @@
 package net.home.oleksin.calculator.parser;
 
-import com.sun.jdi.InvalidTypeException;
-
 import java.math.BigDecimal;
 
 public class NumberTokenReader implements TokenReader {
@@ -17,7 +15,8 @@ public class NumberTokenReader implements TokenReader {
             }
             parserContext.incIndex();
         }
-        Token tempToken = new Token(new BigDecimal(parserContext.getFormula().substring(startIndex, parserContext.getIndex())).setScale(5), TokenType.NUMBER);
+        BigDecimal bigDecimal = new BigDecimal(parserContext.getFormula().substring(startIndex, parserContext.getIndex())).setScale(5);
+        Token tempToken = new Token( bigDecimal, TokenType.NUMBER);
         return tempToken;
     }
 }

@@ -4,7 +4,8 @@ public class OperatorTokenReader implements TokenReader {
     @Override
     public Token proceed(ParserContext parserContext) {
         parserContext.incIndex();
-        Token tempToken = new Token(parserContext.getFormula().substring(parserContext.getIndex()-1,parserContext.getIndex()).charAt(0), TokenType.OPERATION);
+        char chr = parserContext.getFormula().substring(parserContext.getIndex()-1,parserContext.getIndex()).charAt(0);
+        Token tempToken = new Token(chr, TokenType.OPERATION);
         return tempToken;
     }
 }

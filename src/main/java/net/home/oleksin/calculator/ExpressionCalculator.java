@@ -33,51 +33,51 @@ public class ExpressionCalculator {
 
     private void stackingToken()  {
         for (Optional<Token> tempToken : parser){
-            if (tempToken.isPresent()) {
-                switch (tempToken.get().getTokenType()) {
-                    case NUMBER:
-                        outputArray.addLast(tempToken.get());
-                        break;
-                    case BRACKET_OPEN:
-                        operatorsStack.addLast(tempToken.get());
-                        break;
-                    case BRACKET_CLOSE:
-                        boolean bl = false;
-                        while (!operatorsStack.isEmpty()) {
-                            if (operatorsStack.getLast().getTokenType() != TokenType.BRACKET_OPEN) {
-                                outputArray.addLast(operatorsStack.pollLast());
-                            } else {
-                                bl = true;
-                                operatorsStack.removeLast();
-                                break;
-                            }
-                        }
-                        if (!bl) {
-                            throw new IllegalStateException();
-                        }
-                        break;
-                    case OPERATION:
-                        if (operatorsStack.isEmpty() || operatorsStack.getLast().getTokenType() == TokenType.BRACKET_OPEN) {
-                            operatorsStack.addLast(tempToken.get());
-                        } else if (operatorsStack.getLast().getOperation().getPriority() < tempToken.get().getOperation().getPriority()) {
-                            operatorsStack.addLast(tempToken.get());
-                        } else {
-                            outputArray.addLast(operatorsStack.pollLast());
-                            operatorsStack.addLast(tempToken.get());
-                        }
-                        break;
-                }
-            }
-            else{
-                continue;
-            }
+            tempToken.ifPresent(tempToken1 -> {
+                setSwitch(tempToken1);
+            });
         }
         while (!operatorsStack.isEmpty()) {
             outputArray.add(operatorsStack.pollLast());
         }
-
     }
-    
+
+
+    private void setSwitch (Token tempToken){
+        switch (tempToken.getTokenType()) {
+            case NUMBER:
+                outputArray.addLast(tempToken);
+                break;
+            case BRACKET_OPEN:
+                operatorsStack.addLast(tempToken);
+                break;
+            case BRACKET_CLOSE:
+                boolean bl = false;
+                while (!operatorsStack.isEmpty()) {
+                    if (operatorsStack.getLast().getTokenType() != TokenType.BRACKET_OPEN) {
+                        outputArray.addLast(operatorsStack.pollLast());
+                    } else {
+                        bl = true;
+                        operatorsStack.removeLast();
+                        break;
+                    }
+                }
+                if (!bl) {
+                    throw new IllegalStateException();
+                }
+                break;
+            case OPERATION:
+                if (operatorsStack.isEmpty() || operatorsStack.getLast().getTokenType() == TokenType.BRACKET_OPEN) {
+                    operatorsStack.addLast(tempToken);
+                } else if (operatorsStack.getLast().getOperation().getPriority() < tempToken.getOperation().getPriority()) {
+                    operatorsStack.addLast(tempToken);
+                } else {
+                    outputArray.addLast(operatorsStack.pollLast());
+                    operatorsStack.addLast(tempToken);
+                }
+                break;
+        }
+    }
 
 
     public BigDecimal getDecision (){
