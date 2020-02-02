@@ -6,13 +6,11 @@ import net.home.oleksin.calculator.parser.Token;
 import net.home.oleksin.calculator.parser.TokenType;
 
 import java.math.BigDecimal;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.EnumMap;
-import java.util.Optional;
+import java.util.*;
 
 public class ExpressionCalculator {
     private EnumMap <Operation, MathOperation> operators;
+
     private Deque <Token> outputArray;
     private Deque <Token> operatorsStack;
 
@@ -34,7 +32,15 @@ public class ExpressionCalculator {
                 setSwitch(tempToken1);
             });
         }
+
+        if (outputArray.size()<2){
+           throw new NoSuchElementException("You have few numbers");
+        }
+
         while (!operatorsStack.isEmpty()) {
+            if (testForOpenBracket(operatorsStack.getLast().getTokenType())){
+                throw new IllegalStateException("You have open bracket exception");
+            }
             outputArray.add(operatorsStack.pollLast());
         }
     }
@@ -45,13 +51,15 @@ public class ExpressionCalculator {
             case NUMBER:
                 outputArray.addLast(tempToken);
                 break;
+
             case BRACKET_OPEN:
                 operatorsStack.addLast(tempToken);
                 break;
+
             case BRACKET_CLOSE:
                 boolean bl = false;
                 while (!operatorsStack.isEmpty()) {
-                    if (operatorsStack.getLast().getTokenType() != TokenType.BRACKET_OPEN) {
+                    if (!testForOpenBracket(operatorsStack.getLast().getTokenType())) {
                         outputArray.addLast(operatorsStack.pollLast());
                     } else {
                         bl = true;
@@ -60,9 +68,10 @@ public class ExpressionCalculator {
                     }
                 }
                 if (!bl) {
-                    throw new IllegalStateException();
+                    throw new IllegalStateException("You have close bracket exception");
                 }
                 break;
+
             case OPERATION:
                 if (operatorsStack.isEmpty() || operatorsStack.getLast().getTokenType() == TokenType.BRACKET_OPEN) {
                     operatorsStack.addLast(tempToken);
@@ -76,21 +85,32 @@ public class ExpressionCalculator {
         }
     }
 
+    private boolean testForOpenBracket(TokenType token){
+        if (token == TokenType.BRACKET_OPEN)
+            return true;
+        return false;
+    }
+
 
     public BigDecimal execute (String expression){
         Parser parser = new Parser(expression);
+        Deque<BigDecimal> numbersArray = new ArrayDeque<>();
+
         stackingToken(parser);
-        Deque<BigDecimal> tempArray = new ArrayDeque<>();
+
         while (!outputArray.isEmpty()){
             if (outputArray.getFirst().getTokenType() == TokenType.NUMBER){
-                tempArray.addLast(outputArray.pollFirst().getOperand());
+                numbersArray.addLast(outputArray.pollFirst().getOperand());
             }
+
             else{
-                BigDecimal left = tempArray.pollLast();
-                BigDecimal right = tempArray.pollLast();
-                tempArray.addLast(operators.get(outputArray.pollFirst().getOperation()).execute(left, right));
+                BigDecimal left = numbersArray.pollLast();
+                BigDecimal right = numbersArray.pollLast();
+                numbersArray.addLast(operators.get(outputArray.pollFirst().getOperation()).execute(left, right));
             }
         }
-        return tempArray.poll();
+
+
+        return numbersArray.poll();
     }
 }
