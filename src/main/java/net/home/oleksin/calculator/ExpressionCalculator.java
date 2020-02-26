@@ -33,13 +33,10 @@ public class ExpressionCalculator {
             });
         }
 
-        if (outputArray.size()<2){
-           throw new NoSuchElementException("You have few numbers");
-        }
 
         while (!operatorsStack.isEmpty()) {
             if (testForOpenBracket(operatorsStack.getLast().getTokenType())){
-                throw new IllegalStateException("You have open bracket exception");
+                throw new IllegalStateException("You haven't open bracket");
             }
             outputArray.add(operatorsStack.pollLast());
         }
@@ -68,7 +65,7 @@ public class ExpressionCalculator {
                     }
                 }
                 if (!bl) {
-                    throw new IllegalStateException("You have close bracket exception");
+                    throw new IllegalStateException("You haven't close bracket");
                 }
                 break;
 
