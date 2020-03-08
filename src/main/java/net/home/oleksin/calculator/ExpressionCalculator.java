@@ -14,6 +14,8 @@ public class ExpressionCalculator {
     private Deque <Token> outputArray;
     private Deque <Token> operatorsStack;
 
+    private boolean numOrOperation = false;
+
     public ExpressionCalculator(){
         outputArray = new ArrayDeque<>();
         operatorsStack = new ArrayDeque<>();
@@ -47,6 +49,12 @@ public class ExpressionCalculator {
         switch (tempToken.getTokenType()) {
             case NUMBER:
                 outputArray.addLast(tempToken);
+                if (!numOrOperation) {
+                    numOrOperation = true;
+                }
+                else {
+                    throw new IllegalStateException("You have 2 numbers in a row");
+                }
                 break;
 
             case BRACKET_OPEN:
@@ -77,6 +85,12 @@ public class ExpressionCalculator {
                 } else {
                     outputArray.addLast(operatorsStack.pollLast());
                     operatorsStack.addLast(tempToken);
+                }
+                if (numOrOperation) {
+                    numOrOperation = false;
+                }
+                else {
+                    throw new IllegalStateException("You have 2 operations in a row");
                 }
                 break;
         }
