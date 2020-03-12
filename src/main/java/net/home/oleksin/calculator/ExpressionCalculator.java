@@ -34,8 +34,9 @@ public class ExpressionCalculator {
                 setSwitch(tempToken1);
             });
         }
-
-
+        if (!numOrOperation){
+            throw new IllegalStateException("Last token is operation, but number must be last");
+        }
         while (!operatorsStack.isEmpty()) {
             if (testForOpenBracket(operatorsStack.getLast().getTokenType())){
                 throw new IllegalStateException("You haven't open bracket");
