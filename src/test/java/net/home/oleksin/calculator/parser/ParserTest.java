@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
@@ -14,7 +15,6 @@ import static org.hamcrest.MatcherAssert.*;
 
 public class ParserTest {
     private Parser parser;
-    private ParserContext parserContext = Mockito.mock(ParserContext.class);
 
     @Test
     @DisplayName("should return empty object")
@@ -27,14 +27,14 @@ public class ParserTest {
     @DisplayName("should Return IllegalStateException")
     public void shouldReturnIllegalStateException() {
         parser = new Parser("2a");
-        Assertions.assertThrows(IllegalStateException.class,()->parser.iterator().next());
+        Assertions.assertThrows(IllegalStateException.class, ()->parser.iterator().next());
     }
 
     @Test
     @DisplayName("should Return NoSuchElementException")
     public void shouldReturnNoSuchElementException() {
         parser = new Parser("a");
-        Assertions.assertThrows(NoSuchElementException.class,()->parser.iterator().next());
+        Assertions.assertThrows(NoSuchElementException.class, ()->parser.iterator().next());
     }
 
     @Test
@@ -49,5 +49,12 @@ public class ParserTest {
     public void shouldReturnFalse() {
         parser = new Parser("");
         assertThat(false, is(parser.iterator().hasNext()));
+    }
+
+    @Test
+    @DisplayName("should return token")
+    public void shouldReturnNotNull() {
+        parser = new Parser("+");
+        assertThat(Operation.PLUS, is(parser.iterator().next().get().getOperation()));
     }
 }
